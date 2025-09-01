@@ -1,15 +1,27 @@
-import { Button } from "@/components/ui/button"
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "@/features/auth/components/Providers";
+import { Toaster } from "@/components/ui/sonner";
+import { AppRoutes } from "@/routes/AppRoutes";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-function App() {
-
+export function App() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-      <h1>Hello world</h1>
-      <p>Initaialisation de l'application vite js avec tailwind css</p>
-      <Button className="mt-4">Click Me</Button>
-    </div>
-  )
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AppRoutes />
+            <Toaster position="top-right" richColors expand visibleToasts={5} />
+          </AuthProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
+  );
 }
-
-export default App
