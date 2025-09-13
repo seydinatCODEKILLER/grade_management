@@ -4,7 +4,7 @@ import { authApi } from '@/api/endpoints/auth';
 import { toast } from 'sonner';
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -42,7 +42,19 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
     const { status, data } = error.response || {};
 
-    if (status === 401 && !originalRequest._retry && originalRequest.url !== '/auth/refresh') {
+    if (status === 401 && originalRequest.url.includes('/auth/login')) {
+      return Promise.reject(error);
+    }
+
+    if (status === 401 && originalRequest.url === '/auth/refreshToken') {
+       useAuthStore.getState().logout("Session expirée");
+      if (!window.location.pathname.includes('/login')) {
+         window.location.href = '/login';
+      }
+      return Promise.reject(error);
+    }
+
+    if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -64,11 +76,10 @@ apiClient.interceptors.response.use(
 
         const response = await authApi.refreshToken(refreshToken);
         
-        // Mise à jour du store avec les nouveaux tokens
         useAuthStore.getState().updateTokens({
           token: response.token,
           refreshToken: response.refreshToken,
-          user: response.user // Si le backend renvoie les infos utilisateur
+          user: response.user
         });
 
         originalRequest.headers.Authorization = `Bearer ${response.token}`;
@@ -77,10 +88,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         useAuthStore.getState().logout();
-        
-        toast.error('Session expirée', {
-          description: 'Veuillez vous reconnecter'
-        });
         
         if (!window.location.pathname.includes('/login')) {
           window.location.href = '/login';
@@ -92,7 +99,6 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Gestion des autres erreurs
     if (status === 403) {
       const errorMessage = data?.message || 'Vous n\'avez pas les permissions nécessaires';
       toast.error('Accès refusé', {

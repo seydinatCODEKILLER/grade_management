@@ -42,29 +42,34 @@ export const useAuthStore = create<AuthStore>()(
         set((state) => ({
           token,
           refreshToken,
-          user: user || state.user, // Garder l'utilisateur existant si non fourni
+          user: user || state.user,
         }));
       },
 
-      logout: async () => {
-        try {
-          const { token } = get();
-          if (token) {
-            await authApi.logout();
-          }
-        } catch (error) {
-          console.error("Error during logout:", error);
-        } finally {
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
-          toast.info("Déconnexion réussie");
-        }
-      },
+      logout: async (reason?: string) => {
+  try {
+    const { token } = get();
+    if (token) {
+      await authApi.logout();
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  } finally {
+    set({
+      user: null,
+      token: null,
+      refreshToken: null,
+      isAuthenticated: false,
+      isLoading: false,
+    });
+    if (!reason) {
+      toast.info("Déconnexion réussie");
+    } else {
+      toast.error(reason);
+    }
+  }
+},
+
 
       setLoading: (loading: boolean) => set({ isLoading: loading }),
 

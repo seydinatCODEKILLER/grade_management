@@ -40,7 +40,7 @@ export const authApi = {
 
   refreshToken: async (refreshToken: string): Promise<RefreshTokenResponse> => {
     const response = await apiClient.post<ApiResponse<RefreshTokenResponse>>(
-      "/auth/refresh",
+      "/auth/refreshToken",
       { refreshToken }
     );
 
