@@ -48,9 +48,9 @@ export const useAuthStore = create<AuthStore>()(
 
       logout: async (reason?: string) => {
   try {
-    const { token } = get();
-    if (token) {
-      await authApi.logout();
+    const { refreshToken } = get();
+    if (refreshToken) {
+      await authApi.logout(refreshToken);
     }
   } catch (error) {
     console.error("Error during logout:", error);

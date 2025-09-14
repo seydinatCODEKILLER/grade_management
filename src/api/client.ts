@@ -47,7 +47,7 @@ apiClient.interceptors.response.use(
     }
 
     if (status === 401 && originalRequest.url === '/auth/refreshToken') {
-       useAuthStore.getState().logout("Session expirée");
+       useAuthStore.getState().logout();
       if (!window.location.pathname.includes('/login')) {
          window.location.href = '/login';
       }

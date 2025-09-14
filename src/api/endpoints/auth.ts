@@ -20,8 +20,10 @@ export const authApi = {
     return response.data.data;
   },
 
-  logout: async (): Promise<void> => {
-    const response = await apiClient.post<ApiResponse>("/auth/logout");
+  logout: async (refreshToken: string): Promise<void> => {
+    const response = await apiClient.post<ApiResponse>("/auth/logout", {
+      refreshToken,
+    });
 
     if (!response.data.success) {
       throw new Error(response.data.message || "Erreur lors de la déconnexion");

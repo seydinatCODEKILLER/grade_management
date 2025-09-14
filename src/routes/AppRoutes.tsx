@@ -12,11 +12,24 @@ export const AppRoutes = () => {
   return (
     <PageWrapper>
       <Routes>
-        <Route path="/" element={<LoginForm />} />
+        <Route
+          path="/"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/admin/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
         <Route
           path="/login"
           element={
-            !isAuthenticated ? <LoginForm /> : <Navigate to="/" replace />
+            !isAuthenticated ? (
+              <LoginForm />
+            ) : (
+              <Navigate to="/admin/dashboard" replace />
+            )
           }
         />
         {/* Routes protégées */}
