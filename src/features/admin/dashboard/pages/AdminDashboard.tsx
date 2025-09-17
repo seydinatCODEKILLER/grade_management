@@ -1,9 +1,33 @@
+import {
+  useClassStats,
+  useTeacherStats,
+  useStudentStats,
+  useGlobalStats,
+} from "../hooks/useStats";
+import { StatsCardsGrid } from "../components/StatsCardsGrid";
+import { AnalyticsSection } from "../components/AnalyticsSection";
+
 export const AdminDashboard = () => {
+  const { data: studentStats, isLoading: studentLoading } = useStudentStats();
+  const { data: teacherStats, isLoading: teacherLoading } = useTeacherStats();
+  const { data: classStats, isLoading: classLoading } = useClassStats();
+  const { globalStats, isLoading: globalLoading } = useGlobalStats();
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-      <p>Bienvenue dans le tableau de bord de l’administrateur !</p>
-      {/* Ici tu pourras ajouter des cartes, graphiques, statistiques, etc. */}
+    <div className="space-y-8">
+      <StatsCardsGrid
+        studentStats={studentStats}
+        teacherStats={teacherStats}
+        classStats={classStats}
+        studentLoading={studentLoading}
+        teacherLoading={teacherLoading}
+        classLoading={classLoading}
+      />
+
+      <AnalyticsSection
+        isLoading={globalLoading}
+        globalStats={globalStats}
+      />
     </div>
   );
 };
