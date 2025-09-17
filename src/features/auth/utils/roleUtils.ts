@@ -1,14 +1,16 @@
 import type { NavigateFunction } from "react-router-dom";
 
-export const redirectToDashboard = (role: string, navigate: NavigateFunction) => {
-  switch (role) {
-    case "admin":
-      navigate("/admin/dashboard", { replace: true });
-      break;
-    case "professor":
-      navigate("/professor/dashboard", { replace: true });
-      break;
-    default:
-      navigate("/", { replace: true });
-  }
+export type UserRole = "admin" | "professor";
+
+const DASHBOARD_PATHS: Record<UserRole, string> = {
+  admin: "/admin/dashboard",
+  professor: "/professor/dashboard",
+};
+
+export const redirectToDashboard = (
+  role: UserRole,
+  navigate: NavigateFunction
+) => {
+  const path = DASHBOARD_PATHS[role] ?? "/";
+  navigate(path, { replace: true });
 };

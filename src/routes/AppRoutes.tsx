@@ -5,9 +5,11 @@ import { PageWrapper } from "@/components/layout/PageWrapper";
 import { ProtectedRoute } from "./ProtectedRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { AdminDashboard } from "@/features/admin/dashboard/pages/AdminDashboard";
+import { pathToDashboardForUser, type UserRole } from "@/utils/rolePathUtils";
 
 export const AppRoutes = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const dashboardPath = user ? pathToDashboardForUser(user.role as UserRole) : "/";
 
   return (
     <PageWrapper>
@@ -16,7 +18,7 @@ export const AppRoutes = () => {
           path="/"
           element={
             isAuthenticated ? (
-              <Navigate to="/admin/dashboard" replace />
+              <Navigate to={dashboardPath} replace />
             ) : (
               <Navigate to="/login" replace />
             )
@@ -28,7 +30,7 @@ export const AppRoutes = () => {
             !isAuthenticated ? (
               <LoginForm />
             ) : (
-              <Navigate to="/admin/dashboard" replace />
+              <Navigate to={dashboardPath} replace />
             )
           }
         />
